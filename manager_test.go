@@ -1,12 +1,16 @@
 package service
 
 import (
-	"testing"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"reflect"
+	"testing"
 )
 
 type MyStruct struct {
+	Name string
+}
+
+type YourStruct struct {
 	Name string
 }
 
@@ -123,6 +127,46 @@ func TestService(t *testing.T) {
 		So(found2, ShouldEqual, false)
 		So(location1, ShouldEqual, "factories")
 		So(location2, ShouldEqual, "")
+	})
+
+	Convey("Initializers", t, func() {
+		serviceManager := NewManager()
+		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
+			return &MyStruct{
+				Name: "foo",
+			}
+		})
+
+		serviceManager.SetFacgtory("YourStruct", func(sm *Manager) interface{} {
+			return &YourStruct{
+				Name: "foo",
+			}
+		})
+
+		serviceManager.addInitializer(func(service interface{}) {
+			if reflect.TypeOf(service) == reflect.TypeOf(&YourStruct{}) {
+				yourStruct := service.(*YourStruct)
+				yourStruct.Name += " World"
+
+			}
+		}, 2)
+
+		serviceManager.addInitializer(func(service interface{}) {
+			if reflect.TypeOf(service) == reflect.TypeOf(&YourStruct{}) {
+				yourStruct := service.(*YourStruct)
+				yourStruct.Name = "Hello"
+
+			}
+		}, 1)
+
+		service, _ := serviceManager.Get("MyStruct")
+		myStruct := service.(*MyStruct)
+
+		service2, _ := serviceManager.Get("YourStruct")
+		yourStruct := service2.(*YourStruct)
+
+		So(myStruct.Name, ShouldEqual, "foo")
+		So(yourStruct.Name, ShouldEqual, "Hello World")
 	})
 
 }

@@ -1,15 +1,19 @@
 package service
 
-import "errors"
+import (
+	"errors"
+	"sort"
+)
 
 // Service Manager
 type Manager struct {
 	AllowOverride  bool
-	ShareByDefault bool
+	ShareByDefault bool //Whether or not to share by default
 
-	factories FactoriesMap
-	services  ServicesMap
-	shared    SharedMap
+	factories    FactoriesMap
+	services     ServicesMap
+	shared       SharedMap
+	initializers Initializers
 }
 
 //Check for exists service
@@ -47,7 +51,15 @@ func (sm *Manager) SetFacgtory(name string, fn func(*Manager) interface{}) error
 
 }
 
-//Retrieve a registered instance
+func (sm *Manager) addInitializer(fn func(interface{}), order float32) {
+	sm.initializers = append(sm.initializers, Initializer{
+		fn:    fn,
+		order: order,
+	})
+
+	sort.Sort(sm.initializers)
+}
+
 func (sm *Manager) Get(name string) (service interface{}, err error) {
 
 	if se, found := sm.services.Get(name); found {
@@ -61,6 +73,10 @@ func (sm *Manager) Get(name string) (service interface{}, err error) {
 	} else {
 		err = errors.New("unable to fetch or create an instance for " + name)
 		return
+	}
+	// apply initializers
+	for _, init := range sm.initializers {
+		init.fn(service)
 	}
 
 	if sm.shared.Get(name) == true {
@@ -78,5 +94,6 @@ func NewManager() *Manager {
 		shared:         SharedMap{items: make(map[string]bool)},
 		factories:      FactoriesMap{items: make(map[string]func(*Manager) interface{})},
 		services:       ServicesMap{items: make(map[string]interface{})},
+		initializers:   Initializers{},
 	}
 }
