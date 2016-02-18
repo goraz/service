@@ -161,7 +161,7 @@ func TestService(t *testing.T) {
 			}
 		})
 
-		serviceManager.addInitializer(func(service interface{}) {
+		serviceManager.AddInitializer(func(service interface{}) {
 			if reflect.TypeOf(service) == reflect.TypeOf(&YourStruct{}) {
 				yourStruct := service.(*YourStruct)
 				yourStruct.Name += " World"
@@ -169,7 +169,7 @@ func TestService(t *testing.T) {
 			}
 		}, 2)
 
-		serviceManager.addInitializer(func(service interface{}) {
+		serviceManager.AddInitializer(func(service interface{}) {
 			if reflect.TypeOf(service) == reflect.TypeOf(&YourStruct{}) {
 				yourStruct := service.(*YourStruct)
 				yourStruct.Name = "Hello"
