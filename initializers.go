@@ -1,10 +1,12 @@
 package service
 
+//Initializer Store Initializer
 type Initializer struct {
 	fn    func(interface{})
 	order float32
 }
 
+//Initializers is array of  Initializer for sorting
 type Initializers []Initializer
 
 func (slice Initializers) Len() int {

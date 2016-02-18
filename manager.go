@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-// Service Manager
+// Manager for Service
 type Manager struct {
 	AllowOverride  bool
 	ShareByDefault bool //Whether or not to share by default
@@ -17,7 +17,7 @@ type Manager struct {
 	initializers Initializers
 }
 
-//Check for exists service
+//Has Check for exists service
 func (sm *Manager) Has(name string) (string, bool) {
 
 	if sm.factories.Has(name) {
@@ -31,7 +31,7 @@ func (sm *Manager) Has(name string) (string, bool) {
 	return "", false
 }
 
-//Un Register service
+//UnRegister service
 func (sm *Manager) UnRegister(name string) {
 	sm.factories.Remove(name)
 	sm.aliases.Remove(name)
@@ -39,7 +39,7 @@ func (sm *Manager) UnRegister(name string) {
 	sm.services.Remove(name)
 }
 
-// Register service as factory
+//SetFacgtory Register service as factory
 func (sm *Manager) SetFacgtory(name string, fn func(*Manager) interface{}) error {
 
 	if _, find := sm.Has(name); find {
@@ -56,7 +56,7 @@ func (sm *Manager) SetFacgtory(name string, fn func(*Manager) interface{}) error
 	return nil
 }
 
-// Register new alias to another service
+//SetAlias Register new alias to another service
 func (sm *Manager) SetAlias(name string, target string) error {
 
 	if _, find := sm.Has(name); find {
@@ -72,7 +72,8 @@ func (sm *Manager) SetAlias(name string, target string) error {
 	return nil
 }
 
-func (sm *Manager) addInitializer(fn func(interface{}), order float32) {
+//AddInitializer add new initializer
+func (sm *Manager) AddInitializer(fn func(interface{}), order float32) {
 	sm.initializers = append(sm.initializers, Initializer{
 		fn:    fn,
 		order: order,
@@ -81,6 +82,7 @@ func (sm *Manager) addInitializer(fn func(interface{}), order float32) {
 	sort.Sort(sm.initializers)
 }
 
+//Get service
 func (sm *Manager) Get(name string) (service interface{}, err error) {
 
 	if se, found := sm.services.Get(name); found {
@@ -113,7 +115,7 @@ func (sm *Manager) Get(name string) (service interface{}, err error) {
 	return
 }
 
-//Create New Manager Struct
+//NewManager Create New Manager Struct
 func NewManager() *Manager {
 	return &Manager{
 		ShareByDefault: true,
