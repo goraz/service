@@ -16,7 +16,7 @@ type YourStruct struct {
 
 func TestService(t *testing.T) {
 	Convey("get service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
 			return &MyStruct{
 				Name: "foo",
@@ -29,7 +29,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("shared service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
 			return &MyStruct{
 				Name: "foo",
@@ -48,8 +48,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("not shared service", t, func() {
-		serviceManager := NewManager()
-		serviceManager.ShareByDefault = false
+		serviceManager := NewManager(false)
 		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
 			return &MyStruct{
 				Name: "foo",
@@ -68,7 +67,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("not shared service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.ShareByDefault = false
 		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
 			return &MyStruct{
@@ -88,7 +87,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("Allow overide  service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.AllowOverride = true
 		serviceManager.SetFacgtory("service", func(sm *Manager) interface{} {
 			return "foo"
@@ -104,7 +103,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("Allow overide  service with alias", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.AllowOverride = true
 		serviceManager.SetFacgtory("service", func(sm *Manager) interface{} {
 			return "foo"
@@ -122,7 +121,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("check exists service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("service", func(sm *Manager) interface{} {
 			return "foo"
 		})
@@ -135,7 +134,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("check already init", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("service", func(sm *Manager) interface{} {
 			return "foo"
 		})
@@ -148,7 +147,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("Initializers", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
 			return &MyStruct{
 				Name: "foo",
@@ -188,7 +187,7 @@ func TestService(t *testing.T) {
 	})
 
 	Convey("test alias", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetAlias("MyAlias", "MyStruct")
 		serviceManager.SetFacgtory("MyStruct", func(sm *Manager) interface{} {
 			return &MyStruct{
@@ -211,7 +210,7 @@ func TestService(t *testing.T) {
 
 func TestFailService(t *testing.T) {
 	Convey("duplicate service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("service1", func(sm *Manager) interface{} {
 			return "baz"
 		})
@@ -224,7 +223,7 @@ func TestFailService(t *testing.T) {
 	})
 
 	Convey("duplicate alias with factory service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetFacgtory("service1", func(sm *Manager) interface{} {
 			return "baz"
 		})
@@ -234,7 +233,7 @@ func TestFailService(t *testing.T) {
 	})
 
 	Convey("duplicate factory service with alias", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 
 		serviceManager.SetAlias("service1", "AnotherService")
 
@@ -246,13 +245,13 @@ func TestFailService(t *testing.T) {
 	})
 
 	Convey("not found service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		_, err := serviceManager.Get("MyStruct")
 		So(err, ShouldNotBeNil)
 	})
 
 	Convey("not found target alias service", t, func() {
-		serviceManager := NewManager()
+		serviceManager := NewManager(true)
 		serviceManager.SetAlias("MyAlias", "AnotherService")
 		_, err := serviceManager.Get("MyAlias")
 		So(err, ShouldNotBeNil)

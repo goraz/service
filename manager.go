@@ -116,9 +116,9 @@ func (sm *Manager) Get(name string) (service interface{}, err error) {
 }
 
 //NewManager Create New Manager Struct
-func NewManager() *Manager {
+func NewManager(shareByDefault bool) *Manager {
 	return &Manager{
-		ShareByDefault: true,
+		ShareByDefault: shareByDefault,
 		shared:         SharedMap{items: make(map[string]bool)},
 		aliases:        AliasesMap{items: make(map[string]string)},
 		factories:      FactoriesMap{items: make(map[string]func(*Manager) interface{})},
